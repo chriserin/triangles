@@ -1,0 +1,20 @@
+{
+  "src/*.js": {
+    "type": "thing",
+    "template": [
+      "import React, {open} Component {close} from 'react';",
+      "import './{}.css';",
+      "",
+      "class {} extends Component {open}",
+      "  render() {open}",
+      "    return (",
+      "     <div className=\"{}\">",
+      "     </div>",
+      "   );",
+      "  {close}",
+      "{close}",
+      "",
+      "export default {};"
+    ]
+  }
+}
