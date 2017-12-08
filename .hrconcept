@@ -1,4 +1,5 @@
 name: triangles
 url: https://chris-triangles.herokuapp.com
+banner: true
 description: |
   A place to play with triangles
