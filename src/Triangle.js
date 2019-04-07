@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { css } from 'glamor';
-import shuffle from 'lodash/shuffle';
+import isEqual from 'lodash/isEqual';
 
 class Triangle extends Component {
   constructor(props) {
@@ -9,23 +9,43 @@ class Triangle extends Component {
     const triHeight = this.props.triHeight;
 
     this.state = {
-      points: [
-        [100,100],
-        [0,100],
-        [triHeight,0],
-      ]
+      points: [[100, 100], [0, 100], [triHeight, 0]],
+    };
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (
+      isEqual(this.props, nextProps) ||
+      nextProps.triIndex % nextProps.every !== 0
+    ) {
+      return false;
+    } else {
+      return true;
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      points: shuffle([
-        [100,100],
-        [0,100],
-        [nextProps.triHeight,0],
-      ]),
-      oldPoints: this.state.points
-    })
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const { triHeight, triIndex, every, color } = nextProps;
+
+    // let possibles = [
+    //   [[triHeight, 0], [100, 100], [0, 100]],
+    //   [[100, 100], [triHeight, 0], [0, 100]],
+    //   [[0, 100], [100, 100], [triHeight, 0]],
+    // ];
+    //
+
+    const { triHeight: a, triIndex: b, every: c, color: d } = this.props;
+
+    if (!isEqual([triHeight, triIndex, every, color], [a, b, c, d])) {
+      if (triIndex % every === 0) {
+        this.setState({
+          oldColor: this.state.color,
+          points: [[triHeight, 0], [100, 100], [0, 100]],
+          oldPoints: this.state.points,
+          color: color,
+        });
+      }
+    }
   }
 
   render() {
@@ -37,31 +57,47 @@ class Triangle extends Component {
     });
 
     let polygonRule = css({
-      fill: '#666',
+      fill: this.props.color,
       animation: '',
     });
 
-    const pointsString = this.state.points.map( (xy) => xy.join(",")).join(" ")
+    const pointsString = this.state.points.map(xy => xy.join(',')).join(' ');
 
-    let oldPointsString = "";
+    let oldPointsString = '';
     let beginFn = null;
 
     if (this.state.oldPoints) {
-      beginFn = (animate) => { if (animate) animate.beginElement(); }
-      oldPointsString = this.state.oldPoints.map( (xy) => xy.join(",")).join(" ")
+      beginFn = animate => {
+        if (animate) animate.beginElement();
+      };
+
+      oldPointsString = this.state.oldPoints.map(xy => xy.join(',')).join(' ');
     } else {
       oldPointsString = pointsString;
     }
 
     return (
-     <div {...rule} className="Triangle">
-       <svg width="100" height="100">
-        <polygon {...polygonRule} points={ oldPointsString }>
-          <animate ref={ beginFn } fill="freeze" begin="indefinite" attributeName="points" dur="2000ms" from={ oldPointsString } to={ pointsString }/>
-        </polygon>
-       </svg>
-     </div>
-   );
+      <div {...rule} className="Triangle">
+        <svg width="100" height="100">
+          <polygon
+            {...polygonRule}
+            points={oldPointsString}
+            fill={this.state.color}
+            style={{ transition: `fill ${this.props.duration}ms` }}
+          >
+            <animate
+              ref={beginFn}
+              fill="freeze"
+              begin="indefinite"
+              attributeName="points"
+              dur={`${this.props.duration}ms`}
+              from={oldPointsString}
+              to={pointsString}
+            />
+          </polygon>
+        </svg>
+      </div>
+    );
   }
 }
 
