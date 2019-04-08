@@ -2,8 +2,27 @@ import React, { useState, useEffect } from 'react';
 import './TrianglesContainer.css';
 import Triangle from './Triangle.js';
 import styled from 'styled-components';
+import { Select, InputNumber, Checkbox } from 'antd';
 
 const Colors = ['#FF2600', '#8FBF00', '#66FF99', '#F00069', '#FFE600'];
+
+const TriNumber = styled(InputNumber)`
+  margin: 6px;
+  width: 100px;
+`;
+
+const TriSelect = styled(Select)`
+  margin: 6px;
+  width: 100px;
+`;
+
+const TriForm = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  height: 132px;
+  flex-wrap: wrap;
+`;
 
 const Button = styled.button`
   padding: 20px;
@@ -12,9 +31,13 @@ const Button = styled.button`
   font-size: 24px;
 `;
 
-const ShiftButton = styled(Button)`background-color: red;`;
+const ShiftButton = styled(Button)`
+  background-color: red;
+`;
 
-const PlayButton = styled(Button)`background-color: green;`;
+const PlayButton = styled(Button)`
+  background-color: green;
+`;
 
 const Actions = styled.div`
   height: 140px;
@@ -32,12 +55,20 @@ const Actions = styled.div`
     margin-right: 0;
   }
 
-  label {
-    display: block;
+  label:not(.ant-checkbox-wrapper) {
+    align-text: right;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: baseline;
   }
 `;
 
-const Color = styled.option`background-color: ${props => props.color};`;
+const Color = styled.span`
+  background-color: ${props => props.color};
+  padding: 2px;
+`;
 
 const ScenesCount = styled.div`
   font-size: 24px;
@@ -72,19 +103,16 @@ const TrianglesContainer = () => {
     });
   };
 
-  useEffect(
-    () => {
-      if (currentScene !== null) {
-        setTimeout(() => {
-          const nextSceneNumber = currentScene + 1;
-          const nextScene = scenes[nextSceneNumber];
-          setScene(scenes[currentScene]);
-          setCurrentScene(nextScene ? nextSceneNumber : null);
-        }, scenes[currentScene].duration - 50);
-      }
-    },
-    [currentScene]
-  );
+  useEffect(() => {
+    if (currentScene !== null) {
+      setTimeout(() => {
+        const nextSceneNumber = currentScene + 1;
+        const nextScene = scenes[nextSceneNumber];
+        setScene(scenes[currentScene]);
+        setCurrentScene(nextScene ? nextSceneNumber : null);
+      }, scenes[currentScene].duration - 50);
+    }
+  }, [currentScene]);
 
   const play = () => {
     setCurrentScene(0);
@@ -115,73 +143,72 @@ const TrianglesContainer = () => {
         <ScenesCount>{scenes.length} Scenes</ScenesCount>
         <ShiftButton onClick={shift}>Shift</ShiftButton>
         <div>to</div>
-        <div>
+        <TriForm>
           <label>
-            duration
-            <input
+            Duration
+            <TriNumber
               type="number"
               name="duration"
               step="100"
               value={duration}
-              onChange={e => setDuration(e.currentTarget.value)}
+              onChange={value => setDuration(value)}
             />
           </label>
           <label>
-            triHeight
-            <input
+            Top Point Center
+            <TriNumber
               type="number"
               name="triHeight"
               step="10"
               value={triHeight}
-              onChange={e => setTriHeight(e.currentTarget.value)}
+              onChange={value => setTriHeight(value)}
             />
           </label>
           <label>
             Size
-            <input
+            <TriNumber
               type="number"
               name="size"
-              step="1"
+              step="10"
               value={size}
-              onChange={e => setSize(e.currentTarget.value)}
+              onChange={value => setSize(value)}
             />
           </label>
           <label>
             Every
-            <input
+            <TriNumber
               type="number"
               name="every"
               step="1"
               value={every}
-              onChange={e => setEvery(e.currentTarget.value)}
+              onChange={value => setEvery(value)}
             />
           </label>
           <label>
             Color
-            <select
+            <TriSelect
               name="color"
               step="1"
               value={color}
-              onChange={e => setColor(e.currentTarget.value)}
+              onChange={value => setColor(value)}
             >
               {Colors.map((color, i) => (
-                <Color value={color} color={color} key={i}>
-                  {color}
-                </Color>
+                <Select.Option value={color} key={i}>
+                  <Color color={color}>{color}</Color>
+                </Select.Option>
               ))}
-            </select>
+            </TriSelect>
           </label>
-          <label>
+          <Checkbox
+            type="checkbox"
+            name="color"
+            step="1"
+            value={rotate}
+            onChange={value => setRotate(value)}
+          >
             Rotate
-            <input
-              type="checkbox"
-              name="color"
-              step="1"
-              value={rotate}
-              onChange={e => setRotate(e.currentTarget.checked)}
-            />
-          </label>
-        </div>
+          </Checkbox>
+        </TriForm>
         <ShiftButton onClick={pushScene}>Add Scene</ShiftButton>
         <PlayButton onClick={play}>Play</PlayButton>
       </Actions>
