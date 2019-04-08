@@ -12,13 +12,9 @@ const Button = styled.button`
   font-size: 24px;
 `;
 
-const ShiftButton = styled(Button)`
-  background-color: red;
-`;
+const ShiftButton = styled(Button)`background-color: red;`;
 
-const PlayButton = styled(Button)`
-  background-color: green;
-`;
+const PlayButton = styled(Button)`background-color: green;`;
 
 const Actions = styled.div`
   height: 140px;
@@ -41,9 +37,7 @@ const Actions = styled.div`
   }
 `;
 
-const Color = styled.option`
-  background-color: ${props => props.color};
-`;
+const Color = styled.option`background-color: ${props => props.color};`;
 
 const ScenesCount = styled.div`
   font-size: 24px;
@@ -60,27 +54,37 @@ const TrianglesContainer = () => {
     duration: 1000,
     triHeight: 60,
     every: 3,
-    color: 'black',
+    color: '#8FBF00',
     size: 100,
   });
   const [scenes, setScenes] = useState([]);
   const [currentScene, setCurrentScene] = useState(null);
-  const [color, setColor] = useState('#888');
+  const [color, setColor] = useState('#8FBF00');
 
   const shift = () => {
-    setScene({ triHeight, duration, every, color, rotate, size });
+    setScene({
+      triHeight,
+      duration,
+      every,
+      color,
+      rotate,
+      size,
+    });
   };
 
-  useEffect(() => {
-    if (currentScene !== null) {
-      setTimeout(() => {
-        const nextSceneNumber = currentScene + 1;
-        const nextScene = scenes[nextSceneNumber];
-        setScene(scenes[currentScene]);
-        setCurrentScene(nextScene ? nextSceneNumber : null);
-      }, scenes[currentScene].duration - 50);
-    }
-  }, [currentScene]);
+  useEffect(
+    () => {
+      if (currentScene !== null) {
+        setTimeout(() => {
+          const nextSceneNumber = currentScene + 1;
+          const nextScene = scenes[nextSceneNumber];
+          setScene(scenes[currentScene]);
+          setCurrentScene(nextScene ? nextSceneNumber : null);
+        }, scenes[currentScene].duration - 50);
+      }
+    },
+    [currentScene]
+  );
 
   const play = () => {
     setCurrentScene(0);
