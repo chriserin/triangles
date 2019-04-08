@@ -41,36 +41,32 @@ const Actions = styled.div`
   }
 `;
 
-const Scene = ({ scene: { triHeight, duration, every, color } }) => {
-  return (
-    <div>
-      <div>{triHeight}</div>
-      <div>{duration}</div>
-      <div>{every}</div>
-      <div>{color}</div>
-    </div>
-  );
-};
-
 const Color = styled.option`
   background-color: ${props => props.color};
+`;
+
+const ScenesCount = styled.div`
+  font-size: 24px;
+  font-weight: 600;
 `;
 
 const TrianglesContainer = () => {
   const [triHeight, setTriHeight] = useState(60);
   const [duration, setDuration] = useState(1000);
   const [every, setEvery] = useState(1);
+  const [rotate, setRotate] = useState(false);
   const [scene, setScene] = useState({
     duration: 1000,
     triHeight: 60,
     every: 3,
+    color: 'black',
   });
   const [scenes, setScenes] = useState([]);
   const [currentScene, setCurrentScene] = useState(null);
   const [color, setColor] = useState('#888');
 
   const shift = () => {
-    setScene({ triHeight, duration, every, color });
+    setScene({ triHeight, duration, every, color, rotate });
   };
 
   useEffect(() => {
@@ -97,29 +93,19 @@ const TrianglesContainer = () => {
         duration,
         every,
         color,
+        rotate,
       },
     ]);
   };
 
-  const triangles = Array(200)
+  const triangles = Array(50)
     .fill('')
-    .map((_, i) => (
-      <Triangle
-        key={i}
-        triIndex={i}
-        triHeight={scene.triHeight}
-        duration={scene.duration}
-        color={scene.color}
-        every={scene.every}
-      />
-    ));
+    .map((_, i) => <Triangle key={i} triIndex={i} scene={scene} />);
 
   return (
     <div className="TrianglesContainer">
       <Actions>
-        {scenes.map((scene, i) => (
-          <Scene scene={scene} key={i} />
-        ))}
+        <ScenesCount>{scenes.length} Scenes</ScenesCount>
         <ShiftButton onClick={shift}>Shift</ShiftButton>
         <div>to</div>
         <div>
@@ -156,18 +142,27 @@ const TrianglesContainer = () => {
           <label>
             Color
             <select
-              type="se"
               name="color"
               step="1"
               value={color}
               onChange={e => setColor(e.currentTarget.value)}
             >
               {Colors.map((color, i) => (
-                <Color value={color} color={color}>
+                <Color value={color} color={color} key={i}>
                   {color}
                 </Color>
               ))}
             </select>
+          </label>
+          <label>
+            Rotate
+            <input
+              type="checkbox"
+              name="color"
+              step="1"
+              value={rotate}
+              onChange={e => setRotate(e.currentTarget.checked)}
+            />
           </label>
         </div>
         <ShiftButton onClick={pushScene}>Add Scene</ShiftButton>

@@ -2,21 +2,29 @@ import React, { Component } from 'react';
 import { css } from 'glamor';
 import isEqual from 'lodash/isEqual';
 
+const rotatePointOrder = pointOrder => {
+  let result = Object.create(pointOrder);
+  const first = result.shift();
+  result.push(first);
+  return result;
+};
+
 class Triangle extends Component {
   constructor(props) {
     super(props);
 
-    const triHeight = this.props.triHeight;
+    const triHeight = this.props.scene.triHeight;
 
     this.state = {
       points: [[100, 100], [0, 100], [triHeight, 0]],
+      pointOrder: [0, 1, 2],
     };
   }
 
   shouldComponentUpdate(nextProps) {
     if (
-      isEqual(this.props, nextProps) ||
-      nextProps.triIndex % nextProps.every !== 0
+      isEqual(this.props.scene, nextProps.scene) ||
+      nextProps.triIndex % nextProps.scene.every !== 0
     ) {
       return false;
     } else {
@@ -24,31 +32,33 @@ class Triangle extends Component {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { triHeight, triIndex, every, color } = nextProps;
+  UNSAFE_componentWillReceiveProps({ scene, triIndex }) {
+    const { triHeight, every, rotate } = scene;
 
-    // let possibles = [
-    //   [[triHeight, 0], [100, 100], [0, 100]],
-    //   [[100, 100], [triHeight, 0], [0, 100]],
-    //   [[0, 100], [100, 100], [triHeight, 0]],
-    // ];
-    //
-
-    const { triHeight: a, triIndex: b, every: c, color: d } = this.props;
-
-    if (!isEqual([triHeight, triIndex, every, color], [a, b, c, d])) {
+    if (!isEqual(scene, this.props.scene)) {
       if (triIndex % every === 0) {
+        const pointOrder = rotate
+          ? rotatePointOrder(this.state.pointOrder)
+          : this.state.pointOrder;
+        const points = [[triHeight, 0], [100, 100], [0, 100]];
+        const orderedPoints = [
+          points[pointOrder[0]],
+          points[pointOrder[1]],
+          points[pointOrder[2]],
+        ];
+
         this.setState({
-          oldColor: this.state.color,
-          points: [[triHeight, 0], [100, 100], [0, 100]],
+          points: orderedPoints,
           oldPoints: this.state.points,
-          color: color,
+          pointOrder: pointOrder,
         });
       }
     }
   }
 
   render() {
+    const { duration, color } = this.props.scene;
+
     let rule = css({
       float: 'right',
       display: 'inline',
@@ -57,7 +67,7 @@ class Triangle extends Component {
     });
 
     let polygonRule = css({
-      fill: this.props.color,
+      fill: color,
       animation: '',
     });
 
@@ -82,15 +92,15 @@ class Triangle extends Component {
           <polygon
             {...polygonRule}
             points={oldPointsString}
-            fill={this.state.color}
-            style={{ transition: `fill ${this.props.duration}ms` }}
+            fill={color}
+            style={{ transition: `fill ${duration}ms` }}
           >
             <animate
               ref={beginFn}
               fill="freeze"
               begin="indefinite"
               attributeName="points"
-              dur={`${this.props.duration}ms`}
+              dur={`${duration}ms`}
               from={oldPointsString}
               to={pointsString}
             />
