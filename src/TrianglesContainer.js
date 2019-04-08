@@ -21,7 +21,7 @@ const PlayButton = styled(Button)`
 `;
 
 const Actions = styled.div`
-  height: 100px;
+  height: 140px;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -54,19 +54,21 @@ const TrianglesContainer = () => {
   const [triHeight, setTriHeight] = useState(60);
   const [duration, setDuration] = useState(1000);
   const [every, setEvery] = useState(1);
+  const [size, setSize] = useState(100);
   const [rotate, setRotate] = useState(false);
   const [scene, setScene] = useState({
     duration: 1000,
     triHeight: 60,
     every: 3,
     color: 'black',
+    size: 100,
   });
   const [scenes, setScenes] = useState([]);
   const [currentScene, setCurrentScene] = useState(null);
   const [color, setColor] = useState('#888');
 
   const shift = () => {
-    setScene({ triHeight, duration, every, color, rotate });
+    setScene({ triHeight, duration, every, color, rotate, size });
   };
 
   useEffect(() => {
@@ -94,6 +96,7 @@ const TrianglesContainer = () => {
         every,
         color,
         rotate,
+        size,
       },
     ]);
   };
@@ -127,6 +130,16 @@ const TrianglesContainer = () => {
               step="10"
               value={triHeight}
               onChange={e => setTriHeight(e.currentTarget.value)}
+            />
+          </label>
+          <label>
+            Size
+            <input
+              type="number"
+              name="size"
+              step="1"
+              value={size}
+              onChange={e => setSize(e.currentTarget.value)}
             />
           </label>
           <label>

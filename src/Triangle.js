@@ -33,14 +33,14 @@ class Triangle extends Component {
   }
 
   UNSAFE_componentWillReceiveProps({ scene, triIndex }) {
-    const { triHeight, every, rotate } = scene;
+    const { triHeight, every, rotate, size } = scene;
 
     if (!isEqual(scene, this.props.scene)) {
       if (triIndex % every === 0) {
         const pointOrder = rotate
           ? rotatePointOrder(this.state.pointOrder)
           : this.state.pointOrder;
-        const points = [[triHeight, 0], [100, 100], [0, 100]];
+        const points = [[triHeight, 0], [size, size], [0, size]];
         const orderedPoints = [
           points[pointOrder[0]],
           points[pointOrder[1]],
